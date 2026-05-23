@@ -1,40 +1,30 @@
-import { useEffect } from "react";
-import { useCounterStore } from "./store/counterStore"
-import { useDataStore } from "./store/dataStore";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "styled-components";
+import { useIsDarkMode } from "./store/themeStore";
+import RootLayout from "./layouts/RootLayout";
+import LandingPage from "./pages/LandingPage";
+import NotesPage from "./pages/NotesPage";
 
-const App = () => {
-  const { counter, decreaseCounter, increaseCounter } = useCounterStore();
-  const { data, getData, clearData } = useDataStore();
-
-  useEffect(() => {
-    getData();
-
-    return () => clearData();
-  }, []);
-  
+const App: React.FC = () => {
+  const isDarkMode = useIsDarkMode();
 
   return (
-    <div style={{
-      width: 'screen',
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}>
-      <div style={{
-        display: 'flex',
-      }}>
-        <button onClick={decreaseCounter}>-</button>
-        <div style={{ marginRight: 20, marginLeft: 20 }}>Counter: {counter}</div>
-        <button onClick={increaseCounter}>+</button>
-      </div>
-      <br/>
-      <br/>
-      <hr style={{color: 'white'}}/>
-      {JSON.stringify(data)}
-    </div>
-  )
-}
+    <ThemeProvider theme={{ mode: isDarkMode ? "dark" : "light" }}>
+      <Router>
+        <Routes>
+          {/* Main Layout Shell Wrapper Component */}
+          <Route path="/" element={<RootLayout />}>
+            {/* Index Route renders automatically at localhost:3000/ */}
+            <Route index element={<LandingPage />} />
+            
+            {/* Notes Route inherits the layout structural properties automatically at localhost:3000/notes */}
+            <Route path="notes" element={<NotesPage />} />
+          </Route>
+        </Routes>
+      </Router>
+    </ThemeProvider>
+  );
+};
 
-export default App
+export default App;
